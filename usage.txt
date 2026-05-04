@@ -1,0 +1,957 @@
+================================================================================
+                    JIOSAAVN API - COMPLETE USAGE GUIDE
+================================================================================
+
+PROJECT: JioSaavn API - Unofficial Music API Wrapper
+AUTHOR: Sumit Kolhe
+DOCUMENTATION: https://docs.saavn.me
+GITHUB: https://github.com/sumitkolhe/jiosaavn-api
+
+================================================================================
+                         QUICK START
+================================================================================
+
+Base URL (Development): http://localhost:3000
+Base URL (Production): https://your-vercel-app.vercel.app
+
+API Base: https://www.jiosaavn.com/api.php
+
+================================================================================
+                       API ENDPOINT USAGE
+================================================================================
+
+1. HOME PAGE
+================================================================================
+Endpoint: GET /
+Description: Returns HTML landing page with documentation links
+Parameters: None
+Example:
+  curl "http://localhost:3000/"
+
+Response:
+  HTML page with documentation links and project information
+
+
+2. SEARCH ENDPOINTS
+================================================================================
+
+2.1 Search All (Autocomplete)
+-----
+Endpoint: GET /search/all
+Description: Search across all categories (songs, albums, artists, playlists)
+Parameters:
+  - query (required): Search term
+
+Example:
+  curl "http://localhost:3000/search/all?query=Imagine"
+
+JavaScript:
+  fetch('http://localhost:3000/search/all?query=Imagine')
+    .then(res => res.json())
+    .then(data => console.log(data))
+
+Python:
+  import requests
+  response = requests.get('http://localhost:3000/search/all', 
+                         params={'query': 'Imagine'})
+  print(response.json())
+
+Node.js (axios):
+  const axios = require('axios');
+  axios.get('http://localhost:3000/search/all', {
+    params: { query: 'Imagine' }
+  }).then(res => console.log(res.data))
+
+Response:
+  {
+    "status": "SUCCESS",
+    "message": null,
+    "data": {
+      "topQuery": { "results": [...], "position": 1 },
+      "songs": { "results": [...], "position": 2 },
+      "albums": { "results": [...], "position": 3 },
+      "artists": { "results": [...], "position": 4 },
+      "playlists": { "results": [...], "position": 5 }
+    }
+  }
+
+
+2.2 Search Songs
+-----
+Endpoint: GET /search/songs
+Description: Search for songs with pagination
+Parameters:
+  - query (required): Search term
+  - page (optional, default: 1): Page number
+  - limit (optional, default: 20): Results per page
+
+Example:
+  curl "http://localhost:3000/search/songs?query=Imagine&page=1&limit=10"
+
+JavaScript:
+  fetch('http://localhost:3000/search/songs?query=Imagine&page=1&limit=10')
+    .then(res => res.json())
+    .then(data => {
+      console.log('Total:', data.data.totalCount);
+      console.log('Results:', data.data.results);
+    })
+
+Python:
+  import requests
+  response = requests.get('http://localhost:3000/search/songs',
+    params={'query': 'Imagine', 'page': 1, 'limit': 10})
+  data = response.json()
+  print(f"Total: {data['data']['totalCount']}")
+
+Node.js (axios):
+  const axios = require('axios');
+  const response = await axios.get('http://localhost:3000/search/songs', {
+    params: { query: 'Imagine', page: 1, limit: 10 }
+  });
+  console.log(response.data.data);
+
+Response:
+  {
+    "status": "SUCCESS",
+    "data": {
+      "results": [
+        {
+          "id": "123456789",
+          "title": "Imagine",
+          "image": {
+            "quality_50": "https://...",
+            "quality_150": "https://...",
+            "quality_500": "https://..."
+          },
+          "album": "Imagine",
+          "primaryArtists": "John Lennon",
+          "downloadUrl": {
+            "quality_96": "https://...",
+            "quality_128": "https://...",
+            "quality_320": "https://..."
+          }
+        }
+      ],
+      "totalCount": 100
+    }
+  }
+
+
+2.3 Search Albums
+-----
+Endpoint: GET /search/albums
+Description: Search for albums with pagination
+Parameters:
+  - query (required): Search term
+  - page (optional, default: 1): Page number
+  - limit (optional, default: 20): Results per page
+
+Example:
+  curl "http://localhost:3000/search/albums?query=Abbey%20Road&page=1&limit=5"
+
+Node.js:
+  const results = await axios.get('http://localhost:3000/search/albums', {
+    params: { query: 'Abbey Road', page: 1, limit: 5 }
+  });
+  console.log(results.data.data);
+
+
+2.4 Search Playlists
+-----
+Endpoint: GET /search/playlists
+Description: Search for playlists with pagination
+Parameters:
+  - query (required): Search term
+  - page (optional, default: 1): Page number
+  - limit (optional, default: 20): Results per page
+
+Example:
+  curl "http://localhost:3000/search/playlists?query=Hits&page=1&limit=10"
+
+
+2.5 Search Artists
+-----
+Endpoint: GET /search/artists
+Description: Search for artists with pagination
+Parameters:
+  - query (required): Search term
+  - page (optional, default: 1): Page number
+  - limit (optional, default: 20): Results per page
+
+Example:
+  curl "http://localhost:3000/search/artists?query=Beatles&page=1&limit=5"
+
+
+3. SONGS ENDPOINTS
+================================================================================
+
+3.1 Get Song Details by ID
+-----
+Endpoint: GET /songs
+Description: Get complete song information by song ID
+Parameters:
+  - id (required if link not provided): Song ID(s) - comma-separated for multiple
+
+Example:
+  curl "http://localhost:3000/songs?id=123456789"
+
+JavaScript:
+  fetch('http://localhost:3000/songs?id=123456789')
+    .then(res => res.json())
+    .then(data => {
+      const song = data.data[0];
+      console.log('Title:', song.title);
+      console.log('Artist:', song.primaryArtists);
+      console.log('Download 320kbps:', song.downloadUrl.quality_320);
+    })
+
+Python:
+  import requests
+  response = requests.get('http://localhost:3000/songs', 
+                         params={'id': '123456789'})
+  song = response.json()['data'][0]
+  print(f"Title: {song['title']}")
+  print(f"Download: {song['downloadUrl']['quality_320']}")
+
+Node.js:
+  const song = await axios.get('http://localhost:3000/songs', {
+    params: { id: '123456789' }
+  });
+  console.log(song.data.data[0]);
+
+Response:
+  {
+    "status": "SUCCESS",
+    "data": [
+      {
+        "id": "123456789",
+        "title": "Imagine",
+        "image": { "quality_50": "...", "quality_150": "...", ... },
+        "album": { "id": "...", "name": "Imagine (Album)", "url": "..." },
+        "primaryArtists": [{ "id": "...", "name": "John Lennon", ... }],
+        "duration": 243,
+        "year": 1971,
+        "downloadUrl": {
+          "quality_96": "https://...",
+          "quality_128": "https://...",
+          "quality_320": "https://..."
+        },
+        "playCount": 1000000,
+        "language": "english",
+        "url": "https://..."
+      }
+    ]
+  }
+
+
+3.2 Get Song Details by Link
+-----
+Endpoint: GET /songs
+Description: Get complete song information by song link
+Parameters:
+  - link (required if id not provided): Song link/URL
+
+Example:
+  curl "http://localhost:3000/songs?link=https://www.jiosaavn.com/song/imagine/..."
+
+JavaScript:
+  const songLink = "https://www.jiosaavn.com/song/imagine/...";
+  fetch(`http://localhost:3000/songs?link=${encodeURIComponent(songLink)}`)
+    .then(res => res.json())
+    .then(data => console.log(data.data[0]))
+
+
+4. ALBUMS ENDPOINTS
+================================================================================
+
+4.1 Get Album Details by ID
+-----
+Endpoint: GET /albums
+Description: Get complete album information including all songs
+Parameters:
+  - id (required if link not provided): Album ID
+
+Example:
+  curl "http://localhost:3000/albums?id=987654321"
+
+JavaScript:
+  fetch('http://localhost:3000/albums?id=987654321')
+    .then(res => res.json())
+    .then(data => {
+      const album = data.data;
+      console.log('Album:', album.title);
+      console.log('Songs:', album.songs.length);
+      console.log('Artists:', album.primaryArtists);
+    })
+
+Python:
+  import requests
+  album = requests.get('http://localhost:3000/albums',
+    params={'id': '987654321'}).json()['data']
+  print(f"Album: {album['title']}")
+  print(f"Year: {album['year']}")
+  print(f"Songs: {len(album['songs'])}")
+
+Node.js:
+  const album = await axios.get('http://localhost:3000/albums', {
+    params: { id: '987654321' }
+  });
+  console.log(album.data.data);
+
+
+4.2 Get Album Details by Link
+-----
+Endpoint: GET /albums
+Description: Get album information by link
+Parameters:
+  - link (required if id not provided): Album link/URL
+
+Example:
+  curl "http://localhost:3000/albums?link=https://www.jiosaavn.com/album/..."
+
+
+5. ARTISTS ENDPOINTS
+================================================================================
+
+5.1 Get Artist Details by ID
+-----
+Endpoint: GET /artists
+Description: Get complete artist information
+Parameters:
+  - id (required if link not provided): Artist ID
+
+Example:
+  curl "http://localhost:3000/artists?id=111111"
+
+JavaScript:
+  fetch('http://localhost:3000/artists?id=111111')
+    .then(res => res.json())
+    .then(data => {
+      const artist = data.data;
+      console.log('Artist:', artist.name);
+      console.log('Followers:', artist.followerCount);
+      console.log('Top Songs:', artist.topSongs.length);
+    })
+
+Python:
+  import requests
+  artist = requests.get('http://localhost:3000/artists',
+    params={'id': '111111'}).json()['data']
+  print(f"Artist: {artist['name']}")
+  print(f"Followers: {artist['followerCount']}")
+
+
+5.2 Get Artist Details by Link
+-----
+Endpoint: GET /artists
+Description: Get artist information by link
+Parameters:
+  - link (required if id not provided): Artist link/URL
+
+Example:
+  curl "http://localhost:3000/artists?link=https://www.jiosaavn.com/artist/..."
+
+
+5.3 Get Artist Songs
+-----
+Endpoint: GET /artists/:artistId/songs
+Description: Get paginated list of artist's songs
+Parameters:
+  - page (optional, default: 1): Page number
+  - category (optional): Song category
+  - sort (optional): Sort order
+
+Example:
+  curl "http://localhost:3000/artists/111111/songs?page=1&category=all&sort=1"
+
+JavaScript:
+  fetch('http://localhost:3000/artists/111111/songs?page=1')
+    .then(res => res.json())
+    .then(data => {
+      console.log('Total Songs:', data.data.count);
+      console.log('Songs:', data.data.songs);
+    })
+
+Python:
+  import requests
+  response = requests.get(
+    'http://localhost:3000/artists/111111/songs',
+    params={'page': 1, 'category': 'all', 'sort': 1}
+  )
+  print(response.json()['data'])
+
+
+5.4 Get Artist Albums
+-----
+Endpoint: GET /artists/:artistId/albums
+Description: Get paginated list of artist's albums
+Parameters:
+  - page (optional, default: 1): Page number
+  - category (optional): Album category
+  - sort (optional): Sort order
+
+Example:
+  curl "http://localhost:3000/artists/111111/albums?page=1&sort=1"
+
+JavaScript:
+  fetch('http://localhost:3000/artists/111111/albums?page=1')
+    .then(res => res.json())
+    .then(data => console.log(data.data))
+
+
+5.5 Get Artist Top Songs/Recommendations
+-----
+Endpoint: GET /artists/:artistId/recommendations/:songId
+Description: Get top songs/recommendations for artist based on a specific song
+Parameters:
+  - language (optional, default: english): Language code
+
+Example:
+  curl "http://localhost:3000/artists/111111/recommendations/123456789?language=english"
+
+JavaScript:
+  fetch('http://localhost:3000/artists/111111/recommendations/123456789')
+    .then(res => res.json())
+    .then(data => console.log('Top Songs:', data.data))
+
+
+6. PLAYLISTS ENDPOINTS
+================================================================================
+
+6.1 Get Playlist Details
+-----
+Endpoint: GET /playlists
+Description: Get complete playlist information including all songs
+Parameters:
+  - id (required): Playlist ID
+
+Example:
+  curl "http://localhost:3000/playlists?id=1261197649"
+
+JavaScript:
+  fetch('http://localhost:3000/playlists?id=1261197649')
+    .then(res => res.json())
+    .then(data => {
+      const playlist = data.data;
+      console.log('Playlist:', playlist.title);
+      console.log('Total Songs:', playlist.songCount);
+      console.log('Followers:', playlist.followerCount);
+      console.log('Songs:', playlist.songs);
+    })
+
+Python:
+  import requests
+  playlist = requests.get('http://localhost:3000/playlists',
+    params={'id': '1261197649'}).json()['data']
+  print(f"Playlist: {playlist['title']}")
+  print(f"Songs: {len(playlist['songs'])}")
+
+Node.js:
+  const playlist = await axios.get('http://localhost:3000/playlists', {
+    params: { id: '1261197649' }
+  });
+  console.log(playlist.data.data);
+
+Response:
+  {
+    "status": "SUCCESS",
+    "data": {
+      "id": "1261197649",
+      "title": "Hits of 90s",
+      "userId": "12345678",
+      "followerCount": 50000,
+      "songCount": 50,
+      "image": { "quality_50": "...", ... },
+      "url": "https://...",
+      "explicitContent": false,
+      "description": "Best songs from the 90s",
+      "lastUpdated": "2024-01-15",
+      "songs": [
+        {
+          "id": "123456789",
+          "title": "Song Title",
+          "image": {...},
+          "downloadUrl": {...},
+          "primaryArtists": [...]
+        }
+      ]
+    }
+  }
+
+
+7. LYRICS ENDPOINTS
+================================================================================
+
+7.1 Get Song Lyrics
+-----
+Endpoint: GET /lyrics
+Description: Get song lyrics
+Parameters:
+  - id (required): Song ID
+
+Example:
+  curl "http://localhost:3000/lyrics?id=123456789"
+
+JavaScript:
+  fetch('http://localhost:3000/lyrics?id=123456789')
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === 'SUCCESS') {
+        console.log('Lyrics:', data.data.lyrics);
+      } else {
+        console.log('Lyrics not available');
+      }
+    })
+
+Python:
+  import requests
+  response = requests.get('http://localhost:3000/lyrics',
+    params={'id': '123456789'})
+  data = response.json()
+  if data['status'] == 'SUCCESS':
+    print(data['data']['lyrics'])
+
+Node.js:
+  const lyrics = await axios.get('http://localhost:3000/lyrics', {
+    params: { id: '123456789' }
+  });
+  console.log(lyrics.data.data.lyrics);
+
+Response:
+  {
+    "status": "SUCCESS",
+    "data": {
+      "id": "123456789",
+      "title": "Imagine",
+      "lyrics": "Imagine there's no heaven...",
+      "copyright": "© 1971 Yoko Ono"
+    }
+  }
+
+Error Response (if lyrics not found):
+  {
+    "status": "FAILED",
+    "message": "lyrics not found",
+    "data": null
+  }
+
+
+8. MODULES ENDPOINTS
+================================================================================
+
+8.1 Get Browse Modules
+-----
+Endpoint: GET /modules
+Description: Get trending, charts, new releases, and other curated modules
+Parameters:
+  - language (optional, default: english): Language code
+    (english, hindi, tamil, telugu, kannada, marathi, gujarati, punjabi, bengali)
+
+Example:
+  curl "http://localhost:3000/modules?language=english"
+
+JavaScript:
+  fetch('http://localhost:3000/modules?language=english')
+    .then(res => res.json())
+    .then(data => {
+      const modules = data.data;
+      console.log('Albums:', modules.albums.length);
+      console.log('Playlists:', modules.playlists.length);
+      console.log('Trending Songs:', modules.trending.songs.length);
+      console.log('Charts:', modules.charts.length);
+    })
+
+Python:
+  import requests
+  modules = requests.get('http://localhost:3000/modules',
+    params={'language': 'english'}).json()['data']
+  print(f"Trending Songs: {len(modules['trending']['songs'])}")
+  print(f"Albums: {len(modules['albums'])}")
+
+Node.js:
+  const modules = await axios.get('http://localhost:3000/modules', {
+    params: { language: 'english' }
+  });
+  console.log(modules.data.data);
+
+Response:
+  {
+    "status": "SUCCESS",
+    "data": {
+      "albums": [...],
+      "playlists": [...],
+      "charts": [...],
+      "trending": {
+        "songs": [...],
+        "albums": [...]
+      }
+    }
+  }
+
+
+================================================================================
+                       ADVANCED USAGE EXAMPLES
+================================================================================
+
+EXAMPLE 1: Get Complete Song Information with Download Link
+================================================================================
+JavaScript:
+  async function getFullSongInfo(query) {
+    try {
+      // Step 1: Search for song
+      const searchRes = await fetch(
+        `http://localhost:3000/search/songs?query=${query}&page=1&limit=1`
+      );
+      const searchData = await searchRes.json();
+      
+      if (searchData.data.results.length === 0) {
+        console.log('Song not found');
+        return;
+      }
+      
+      // Step 2: Get song ID and fetch full details
+      const songId = searchData.data.results[0].id;
+      const detailsRes = await fetch(`http://localhost:3000/songs?id=${songId}`);
+      const detailsData = await detailsRes.json();
+      const song = detailsData.data[0];
+      
+      // Step 3: Get lyrics
+      const lyricsRes = await fetch(`http://localhost:3000/lyrics?id=${songId}`);
+      const lyricsData = await lyricsRes.json();
+      
+      console.log({
+        title: song.title,
+        artist: song.primaryArtists[0].name,
+        album: song.album.name,
+        year: song.year,
+        duration: song.duration,
+        image: song.image.quality_500,
+        download_128: song.downloadUrl.quality_128,
+        download_320: song.downloadUrl.quality_320,
+        lyrics: lyricsData.status === 'SUCCESS' ? lyricsData.data.lyrics : 'Not available',
+        playCount: song.playCount
+      });
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+  
+  // Usage:
+  getFullSongInfo('Imagine');
+
+
+EXAMPLE 2: Get Artist Profile with Top Songs and Albums
+================================================================================
+Node.js:
+  const axios = require('axios');
+  
+  async function getArtistProfile(artistId) {
+    try {
+      const [artist, songs, albums] = await Promise.all([
+        axios.get('http://localhost:3000/artists', { params: { id: artistId } }),
+        axios.get(`http://localhost:3000/artists/${artistId}/songs`, 
+          { params: { page: 1 } }),
+        axios.get(`http://localhost:3000/artists/${artistId}/albums`, 
+          { params: { page: 1 } })
+      ]);
+      
+      console.log({
+        name: artist.data.data.name,
+        followers: artist.data.data.followerCount,
+        description: artist.data.data.description,
+        image: artist.data.data.image.quality_500,
+        topSongs: songs.data.data.songs.slice(0, 5),
+        topAlbums: albums.data.data.albums.slice(0, 5)
+      });
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+  
+  // Usage:
+  getArtistProfile('111111');
+
+
+EXAMPLE 3: Search and Download All Songs from Results
+================================================================================
+Python:
+  import requests
+  import csv
+  
+  def download_search_results(query, limit=50):
+      response = requests.get('http://localhost:3000/search/songs',
+        params={'query': query, 'page': 1, 'limit': limit})
+      
+      songs = response.json()['data']['results']
+      
+      with open('songs.csv', 'w', newline='') as f:
+          writer = csv.writer(f)
+          writer.writerow(['Title', 'Artist', 'Album', 'Download_320'])
+          
+          for song in songs:
+              writer.writerow([
+                  song.get('title', ''),
+                  song.get('primaryArtists', ''),
+                  song.get('album', ''),
+                  song.get('downloadUrl', {}).get('quality_320', '')
+              ])
+      
+      print(f"Downloaded {len(songs)} songs to songs.csv")
+  
+  # Usage:
+  download_search_results('Imagine', limit=50)
+
+
+EXAMPLE 4: Get Trending Content
+================================================================================
+JavaScript:
+  async function getTrendingContent() {
+    try {
+      const res = await fetch('http://localhost:3000/modules?language=english');
+      const data = await res.json();
+      const trending = data.data.trending;
+      
+      console.log('Trending Songs:');
+      trending.songs.slice(0, 5).forEach((song, i) => {
+        console.log(`${i+1}. ${song.name} by ${song.primaryArtists.map(a => a.name).join(', ')}`);
+      });
+      
+      console.log('\nTrending Albums:');
+      trending.albums.slice(0, 5).forEach((album, i) => {
+        console.log(`${i+1}. ${album.name} by ${album.primaryArtists.map(a => a.name).join(', ')}`);
+      });
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+  
+  // Usage:
+  getTrendingContent();
+
+
+EXAMPLE 5: Paginate Through All Search Results
+================================================================================
+JavaScript:
+  async function getAllSearchResults(query) {
+    let allResults = [];
+    let page = 1;
+    let hasMore = true;
+    
+    while (hasMore) {
+      const res = await fetch(
+        `http://localhost:3000/search/songs?query=${query}&page=${page}&limit=20`
+      );
+      const data = await res.json();
+      
+      if (data.data.results.length === 0) {
+        hasMore = false;
+      } else {
+        allResults = allResults.concat(data.data.results);
+        page++;
+      }
+    }
+    
+    console.log(`Total results: ${allResults.length}`);
+    return allResults;
+  }
+  
+  // Usage:
+  getAllSearchResults('Beatles').then(results => {
+    console.log(results);
+  });
+
+
+================================================================================
+                         ERROR HANDLING
+================================================================================
+
+Common Error Responses:
+
+1. Song Not Found (404)
+  {
+    "status": "FAILED",
+    "message": "song not found",
+    "data": null
+  }
+
+2. Invalid Parameters (400)
+  {
+    "status": "FAILED",
+    "message": "Invalid query parameter",
+    "data": null
+  }
+
+3. Request Timeout (503)
+  {
+    "status": "FAILED",
+    "message": "request timeout",
+    "data": null
+  }
+
+4. Route Not Found (404)
+  {
+    "status": "FAILED",
+    "message": "route not found, please check documentation at https://docs.saavn.me",
+    "data": null
+  }
+
+
+================================================================================
+                        RESPONSE STATUS CODES
+================================================================================
+
+200 OK                   - Successful request
+400 Bad Request         - Invalid input parameters
+404 Not Found           - Resource not found
+429 Too Many Requests   - Rate limit exceeded
+500 Internal Error      - Server error
+503 Service Unavailable - Request timeout (>9.5 seconds)
+
+
+================================================================================
+                         LANGUAGE SUPPORT
+================================================================================
+
+Supported Languages for /modules endpoint:
+  - english (default)
+  - hindi
+  - tamil
+  - telugu
+  - kannada
+  - marathi
+  - gujarati
+  - punjabi
+  - bengali
+
+Example:
+  curl "http://localhost:3000/modules?language=hindi"
+
+
+================================================================================
+                      PAGINATION GUIDELINES
+================================================================================
+
+All search endpoints support pagination:
+  - page: 1-indexed (default: 1)
+  - limit: Results per page (default: 20, max: 100)
+
+Example:
+  GET /search/songs?query=Imagine&page=2&limit=50
+
+Notes:
+  - Pages are 1-indexed on client side
+  - Internally converted to 0-indexed for API
+  - Total count returned in response
+
+
+================================================================================
+                      IMAGE & DOWNLOAD URLS
+================================================================================
+
+Image Quality Options:
+  - quality_50: Thumbnail (50x50px)
+  - quality_150: Small (150x150px)
+  - quality_500: Large (500x500px)
+
+Download Quality Options:
+  - quality_96: 96 kbps (low quality)
+  - quality_128: 128 kbps (medium quality)
+  - quality_320: 320 kbps (high quality, recommended)
+
+Example:
+  Song Image:     song.image.quality_500
+  Album Image:    album.image.quality_500
+  Artist Image:   artist.image.quality_500
+  Download Link:  song.downloadUrl.quality_320
+
+
+================================================================================
+                       PERFORMANCE TIPS
+================================================================================
+
+1. Always use pagination (limit results with page & limit)
+2. Cache responses in your application
+3. Use Promise.all() for parallel requests
+4. Request only needed image quality (quality_500 is ~200KB)
+5. Download quality_320 for best audio quality
+6. Specify language parameter for localized results
+7. Use search endpoints for discovery, not for entire catalog
+8. Implement retry logic for timeout errors (503)
+9. Set proper cache headers in your backend
+10. Monitor rate limits if enabled
+
+
+================================================================================
+                      DEPLOYMENT NOTES
+================================================================================
+
+Development:
+  npm run dev              # Start development server on http://localhost:3000
+
+Build:
+  npm run build            # Compile TypeScript to JavaScript
+
+Production:
+  npm start                # Build and start production server
+
+Vercel Deployment:
+  - Automatic deployment on git push
+  - Environment: Node.js 18.x or higher
+  - Build command: npm run build
+  - Output directory: public/
+  - Functions: api/index.ts (serverless function)
+
+Environment Variables:
+  - NODE_ENV: Set to 'production' for Vercel
+  - PORT: Automatically set by Vercel (default: 80)
+  - ENABLE_RATE_LIMIT: Set to 'true' to enable rate limiting
+
+CORS:
+  - Enabled for all origins
+  - GET and OPTIONS methods supported
+  - Credentials not required
+
+
+================================================================================
+                        USEFUL LINKS
+================================================================================
+
+Documentation:     https://docs.saavn.me
+GitHub:            https://github.com/sumitkolhe/jiosaavn-api
+Issues/Features:   https://github.com/sumitkolhe/jiosaavn-api/issues
+Author:            https://github.com/sumitkolhe
+Official Docs:     https://docs.saavn.me
+API Base:          https://www.jiosaavn.com/api.php
+
+
+================================================================================
+                        QUICK REFERENCE
+================================================================================
+
+API Endpoints (15 total):
+  ✓ GET /                                    - Landing page
+  ✓ GET /search/all                          - Search everything
+  ✓ GET /search/songs                        - Search songs
+  ✓ GET /search/albums                       - Search albums
+  ✓ GET /search/playlists                    - Search playlists
+  ✓ GET /search/artists                      - Search artists
+  ✓ GET /songs                               - Get song by ID or link
+  ✓ GET /albums                              - Get album by ID or link
+  ✓ GET /artists                             - Get artist by ID or link
+  ✓ GET /artists/:artistId/songs             - Get artist songs
+  ✓ GET /artists/:artistId/albums            - Get artist albums
+  ✓ GET /artists/:artistId/recommendations/:songId - Artist top songs
+  ✓ GET /playlists                           - Get playlist
+  ✓ GET /lyrics                              - Get song lyrics
+  ✓ GET /modules                             - Get trending modules
+
+
+================================================================================
+                      END OF USAGE GUIDE
+================================================================================
+
+Last Updated: 2024
+Version: 1.0.0
+Questions? Check: https://docs.saavn.me
+
+Happy Coding! 🎵

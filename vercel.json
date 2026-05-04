@@ -1,0 +1,62 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "projectSettings": {
+    "nodeVersion": "18.x"
+  },
+  "buildCommand": "npm run build",
+  "outputDirectory": "public",
+  "rewrites": [
+    { "source": "(.*)", "destination": "/api" }
+  ],
+  "headers": [
+    {
+      "source": "(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, OPTIONS"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, s-maxage=300, stale-while-revalidate=600"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Author",
+          "value": "Sumit Kolhe"
+        },
+        {
+          "key": "Github",
+          "value": "https://github.com/sumitkolhe/jiosaavn-api"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/docs",
+      "destination": "https://docs.saavn.me",
+      "permanent": false
+    },
+    {
+      "source": "/github",
+      "destination": "https://github.com/sumitkolhe/jiosaavn-api",
+      "permanent": false
+    }
+  ]
+}
