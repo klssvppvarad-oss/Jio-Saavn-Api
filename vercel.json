@@ -1,8 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "projectSettings": {
-    "nodeVersion": "18.x"
-  },
   "buildCommand": "npm run build",
   "outputDirectory": "public",
   "rewrites": [
