@@ -1,6 +1,6 @@
 import { globalConstants } from '../constants'
 import { SearchService } from '../services/search.service'
-import type { AllSearchResponse } from 'interfaces/search.interface'
+import type { AllSearchResponse } from '../interfaces/search.interface'
 import type { ArtistSearchResponse } from '../interfaces/artist.interface'
 import type { PlaylistSearchResponse } from '../interfaces/playlist.interface'
 import type { AlbumSearchResponse } from '../interfaces/album.interface'
