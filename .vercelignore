@@ -31,9 +31,10 @@ node_modules/
 .DS_Store
 Thumbs.db
 
-# Build artifacts (keep public/)
+# Build artifacts
 dist/
 build/
+public/
 
 # Test
 .test
@@ -54,7 +55,6 @@ temp/
 .cache/
 
 # Keep these files!
-# ! public/
 # ! src/
 # ! api/
 # ! package.json
