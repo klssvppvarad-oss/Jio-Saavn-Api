@@ -15,14 +15,14 @@
     "pretty": true,
     "sourceMap": false,
     "declaration": true,
-    "outDir": "./public",
+    "outDir": "./dist",
     "allowJs": true,
     "noEmit": false,
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "importHelpers": true,
-    "baseUrl": "src"
+    "baseUrl": "."
   },
-  "include": ["src/**/*.ts", "src/**/*.json", ".env"],
+  "include": ["src/**/*.ts", "api/**/*.ts", "src/**/*.json", ".env"],
   "exclude": ["node_modules"]
 }
