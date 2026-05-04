@@ -1,11 +1,11 @@
 {
   "name": "jiosaavn-api",
   "version": "1.0.0",
-  "main": "public/server.js",
+  "main": "dist/src/server.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development tsx watch ./src/server.ts",
     "build": "tsc",
-    "start": "npm run build && node public/server.js"
+    "start": "npm run build && node dist/src/server.js"
   },
   "dependencies": {
     "celebrate": "^15.0.1",
